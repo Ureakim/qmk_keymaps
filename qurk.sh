@@ -38,7 +38,7 @@ function setup() {
 	docker run -it --rm \
 		-v qmk_firmware:/qmk_firmware \
 		qmkfm/qmk_cli:latest \
-		bash -c "qmk setup"
+		bash -c "qmk setup -y"
 }
 
 function clean() {
