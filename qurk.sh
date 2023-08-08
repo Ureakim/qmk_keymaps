@@ -10,10 +10,16 @@ function defaultargs() {
 
 function usage() {
 	printf "Usage :\n"
-	printf "\t--bl                   : QMK bootloader name ;\n"
-	printf "\t--kb                   : QMK keyboard name ;\n"
-	printf "\t--km                   : QMK keymap name ;\n"
-	printf "\t-h                     : Script help.\n"
+	printf "\t--setup                  : Setup the QMK environment\n"
+	printf "\t--clean                  : Clean the firmware folder\n"
+	printf "\t--compile                : Build a new QMK firmware in the firmware folder\n"
+	printf "\t\t--bl                   : QMK bootloader name (promicro)\n"
+	printf "\t\t--kb*                  : QMK keyboard name\n"
+	printf "\t\t--km                   : QMK keymap name (default)\n"
+	printf "\t\t--kr*                   : QMK model name\n"
+	printf "\t\t--env                  : Path to a folder with a .env file\n"
+	printf "\t\t                       : Take priority over any other args\n"
+	printf "\t-h	                     : Script help\n"
 }
 
 function checkargs() {
@@ -41,10 +47,11 @@ function firmwarename() {
 	case $QMK_BL in
 	liatris)
 		QMK_FW="${QMK_KB//\//_}_${QMK_KR}_${QMK_KM}_${QMK_BL}.uf2"
+		break
 		;;
 	*)
-		echo >&2 "file extension unknown for target $QMK_BL"
-		exit 1
+		QMK_FW="${QMK_KB//\//_}_${QMK_KR}_${QMK_KM}.hex"
+		break
 		;;
 	esac
 }
@@ -72,7 +79,7 @@ function build() {
 			chown -R $(id -u):$(id -g) /firmware"
 }
 
-OPTS=$(getopt -o h -l setup,clean,bl:,kb:,km:,env: -- "$@")
+OPTS=$(getopt -o h -l setup,clean,compile,bl:,kb:,km:,env: -- "$@")
 if [ $? != 0 ]; then
 	exit 1
 fi
@@ -85,26 +92,6 @@ while true; do
 		usage
 		exit 0
 		;;
-	--bl)
-		QMK_BL=$2
-		shift 2
-		;;
-	--kb)
-		QMK_KB=$2
-		shift 2
-		;;
-	--km)
-		QMK_KM=$2
-		shift 2
-		;;
-	--kr)
-		QMK_KR=$2
-		shift 2
-		;;
-	--env)
-		QMK_ENV=$2
-		shift 2
-		;;
 	--setup)
 		setup
 		exit 0
@@ -113,9 +100,49 @@ while true; do
 		clean
 		exit 0
 		;;
-	--)
+	--compile)
 		shift
+		while true; do
+			case "$1" in
+			--bl)
+				QMK_BL=$2
+				shift 2
+				;;
+			--kb)
+				QMK_KB=$2
+				shift 2
+				;;
+			--km)
+				QMK_KM=$2
+				shift 2
+				;;
+			--kr)
+				QMK_KR=$2
+				shift 2
+				;;
+			--env)
+				QMK_ENV=$2
+				shift 2
+				;;
+			--setup)
+				setup
+				exit 0
+				;;
+			--clean)
+				clean
+				exit 0
+				;;
+			--)
+				shift
+				break
+				;;
+			esac
+		done
 		break
+		;;
+	*)
+		usage
+		exit 1
 		;;
 	esac
 done
