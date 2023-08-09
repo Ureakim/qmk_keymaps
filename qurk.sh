@@ -11,12 +11,13 @@ function defaultargs() {
 function usage() {
 	printf "Usage :\n"
 	printf "\t--setup                  : Setup the QMK environment\n"
+	printf "\t--it                     : Run the docker image in interactive mode\n"
 	printf "\t--clean                  : Clean the firmware folder\n"
 	printf "\t--compile                : Build a new QMK firmware in the firmware folder\n"
 	printf "\t\t--bl                   : QMK bootloader name (promicro)\n"
 	printf "\t\t--kb*                  : QMK keyboard name\n"
 	printf "\t\t--km                   : QMK keymap name (default)\n"
-	printf "\t\t--kr*                   : QMK model name\n"
+	printf "\t\t--kr*                  : QMK model name\n"
 	printf "\t\t--env                  : Path to a folder with a .env file\n"
 	printf "\t\t                       : Take priority over any other args\n"
 	printf "\t-h	                     : Script help\n"
@@ -56,6 +57,13 @@ function firmwarename() {
 	esac
 }
 
+function interactive() {
+	docker run -it --rm \
+		-v qmk_firmware:/qmk_firmware \
+		-w /qmk_firmware \
+		qmkfm/qmk_cli:latest
+}
+
 function setup() {
 	docker run -it --rm \
 		-v qmk_firmware:/qmk_firmware \
@@ -79,7 +87,7 @@ function build() {
 			chown -R $(id -u):$(id -g) /firmware"
 }
 
-OPTS=$(getopt -o h -l setup,clean,compile,bl:,kb:,km:,env: -- "$@")
+OPTS=$(getopt -o h -l it,setup,clean,compile,bl:,kb:,km:,env: -- "$@")
 if [ $? != 0 ]; then
 	exit 1
 fi
@@ -98,6 +106,10 @@ while true; do
 		;;
 	--clean)
 		clean
+		exit 0
+		;;
+	--it)
+		interactive
 		exit 0
 		;;
 	--compile)
