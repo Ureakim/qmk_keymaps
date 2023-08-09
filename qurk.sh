@@ -28,11 +28,6 @@ function checkargs() {
 		echo >&2 "no --kb argument: keyboard name is mandatory."
 		exit 1
 	fi
-
-	if [ -z "$QMK_KR" ]; then
-		echo >&2 "no --kr argument: keyboard model is mandatory."
-		exit 1
-	fi
 }
 
 function loadargs() {
@@ -45,14 +40,17 @@ function loadargs() {
 }
 
 function firmwarename() {
+	local keyboardname="${QMK_KB//\//_}"
+	if [ ! -z "$QMK_KR" ]; then
+		keyboardname="${QMK_KB//\//_}_${QMK_KR}"
+	fi
+
 	case $QMK_BL in
 	liatris)
-		QMK_FW="${QMK_KB//\//_}_${QMK_KR}_${QMK_KM}_${QMK_BL}.uf2"
-		break
+		QMK_FW="${keyboardname}_${QMK_KM}_${QMK_BL}.uf2"
 		;;
 	*)
-		QMK_FW="${QMK_KB//\//_}_${QMK_KR}_${QMK_KM}.hex"
-		break
+		QMK_FW="${keyboardname}_${QMK_KM}.hex"
 		;;
 	esac
 }
@@ -76,6 +74,11 @@ function clean() {
 }
 
 function build() {
+	local keyboardname="${QMK_KB}"
+	if [ ! -z "$QMK_KR" ]; then
+		keyboardname = "${QMK_KB}/${QMK_KR}"
+	fi
+
 	docker run -it --rm \
 		-v qmk_firmware:/qmk_firmware \
 		-v ./keyboards/$QMK_KB/keymaps/$QMK_KM:/qmk_firmware/keyboards/$QMK_KB/keymaps/$QMK_KM \
@@ -87,7 +90,8 @@ function build() {
 			chown -R $(id -u):$(id -g) /firmware"
 }
 
-OPTS=$(getopt -o h -l it,setup,clean,compile,bl:,kb:,km:,env: -- "$@")
+defaultargs
+OPTS=$(getopt -o h -l it,setup,clean,compile,bl:,kb:,kr:,km:,env: -- "$@")
 if [ $? != 0 ]; then
 	exit 1
 fi
@@ -121,6 +125,7 @@ while true; do
 				shift 2
 				;;
 			--kb)
+				echo "$2"
 				QMK_KB=$2
 				shift 2
 				;;
@@ -159,7 +164,6 @@ while true; do
 	esac
 done
 
-defaultargs
 # if the env var is set, ignore other vars and get them from the env file
 if [ ! -z "$QMK_ENV" ]; then
 	loadargs
@@ -167,9 +171,9 @@ fi
 checkargs
 firmwarename
 
-echo "KB: $QMK_KB"
-echo "KR: $QMK_KR"
-echo "KM: $QMK_KM"
-echo "BL: $QMK_BL"
-echo "FW: $QMK_FW"
+echo "Keyboard: $QMK_KB"
+echo "Model: $QMK_KR"
+echo "Keymap: $QMK_KM"
+echo "Bootloader: $QMK_BL"
+echo "firmware: $QMK_FW"
 build
