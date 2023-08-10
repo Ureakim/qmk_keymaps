@@ -59,6 +59,7 @@ function firmwarename() {
 function interactive() {
 	docker run -it --rm \
 		-v qmk_firmware:/qmk_firmware \
+		-v ./:/repo \
 		-w /qmk_firmware \
 		qmkfm/qmk_cli:latest
 }
