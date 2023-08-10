@@ -69,6 +69,14 @@ function setup() {
 		bash -c "qmk setup -y"
 }
 
+function update() {
+	docker run -it --rm \
+		-v qmk_firmware:/qmk_firmware \
+		-w /qmk_firmware \
+		qmkfm/qmk_cli:latest \
+		bash -c "git pull && make git-submodule"
+}
+
 function clean() {
 	rm -rf firmware/*
 }
@@ -91,7 +99,7 @@ function build() {
 }
 
 defaultargs
-OPTS=$(getopt -o h -l it,setup,clean,compile,bl:,kb:,kr:,km:,env: -- "$@")
+OPTS=$(getopt -o h -l it,setup,clean,update,compile,bl:,kb:,kr:,km:,env: -- "$@")
 if [ $? != 0 ]; then
 	exit 1
 fi
@@ -106,6 +114,10 @@ while true; do
 		;;
 	--setup)
 		setup
+		exit 0
+		;;
+	--update)
+		update
 		exit 0
 		;;
 	--clean)
