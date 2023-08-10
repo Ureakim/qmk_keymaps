@@ -3,9 +3,10 @@
 
 # https://bioinfo-fr.net/astuce-ajouter-des-options-dans-un-script-bash-avec-getopt
 function defaultargs() {
-	QMK_BK=
+	QMK_BL=
 	QMK_KB=
-	QMK_KM=default
+	QMK_KM=$(whoami)
+	QMK_KR=
 }
 
 function usage() {
@@ -84,12 +85,12 @@ function clean() {
 function build() {
 	local keyboardname="${QMK_KB}"
 	if [ ! -z "$QMK_KR" ]; then
-		keyboardname = "${QMK_KB}/${QMK_KR}"
+		keyboardname="${QMK_KB}/${QMK_KR}"
 	fi
 
 	docker run -it --rm \
 		-v qmk_firmware:/qmk_firmware \
-		-v ./keyboards/$QMK_KB/keymaps/$QMK_KM:/qmk_firmware/keyboards/$QMK_KB/keymaps/$QMK_KM \
+		-v ./$QMK_ENV:/qmk_firmware/keyboards/$QMK_KB/keymaps/$QMK_KM \
 		-v ./firmware:/firmware \
 		-w /firmware \
 		qmkfm/qmk_cli:latest \
