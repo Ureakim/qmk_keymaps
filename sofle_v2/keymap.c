@@ -47,3 +47,8 @@ const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
 };
 #endif // defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
 
+void keyboard_pre_init_user(void) {
+	// turning off the onboard power LED
+	setPinOutput(24);
+	writePinHigh(24);
+}
