@@ -43,6 +43,14 @@ const uint16_t PROGMEM keymaps[][MATRIX_ROWS][MATRIX_COLS] = {
 	)
 };
 
+#if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
+const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
+	[_BASE]  =  { ENCODER_CCW_CW(KC_VOLD, KC_VOLU), ENCODER_CCW_CW(KC_PGUP, KC_PGDN)  },
+	[_SIGNS] =  { ENCODER_CCW_CW(XXXXXXX, XXXXXXX), ENCODER_CCW_CW(XXXXXXX, XXXXXXX)  },
+	[_MOVE]  =  { ENCODER_CCW_CW(XXXXXXX, XXXXXXX), ENCODER_CCW_CW(XXXXXXX, XXXXXXX)  }
+};
+
+#endif // defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
 void keyboard_pre_init_user(void) {
 	// turning off the onboard power LED
 	setPinOutput(24);
@@ -61,14 +69,6 @@ bool process_record_user(uint16_t keycode, keyrecord_t *record) {
 	}
 	return true;
 }
-
-#if defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
-const uint16_t PROGMEM encoder_map[][NUM_ENCODERS][NUM_DIRECTIONS] = {
-	[_BASE]  =  { ENCODER_CCW_CW(KC_VOLU, KC_VOLD), ENCODER_CCW_CW(KC_PGUP, KC_PGDN)  },
-	[_SIGNS] =  { ENCODER_CCW_CW(XXXXXXX, XXXXXXX), ENCODER_CCW_CW(XXXXXXX, XXXXXXX)  },
-	[_MOVE]  =  { ENCODER_CCW_CW(XXXXXXX, XXXXXXX), ENCODER_CCW_CW(XXXXXXX, XXXXXXX)  }
-};
-#endif // defined(ENCODER_ENABLE) && defined(ENCODER_MAP_ENABLE)
 
 #ifdef OLED_ENABLE
 bool should_process_keypress(void) {
