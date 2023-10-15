@@ -246,10 +246,10 @@
       "KC_LGUI",
       "KC_LALT",
       "KC_LCTL",
-      "KC_TRNS",
+      "TO(0)",
       "KC_SPC",
       "KC_ENT",
-      "KC_TRNS",
+      "TO(0)",
       "KC_RCTL",
       "KC_LALT",
       "KC_RGUI"
