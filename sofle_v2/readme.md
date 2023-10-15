@@ -16,3 +16,8 @@
 <p align="center">
   <img src="https://raw.githubusercontent.com/Ureakim/qmk_keymaps/master/sofle_v2/assets/_move.png">
 </p>
+
+**3 _GAME**
+<p align="center">
+  <img src="https://raw.githubusercontent.com/Ureakim/qmk_keymaps/master/sofle_v2/assets/_game.png">
+</p>
